@@ -10,7 +10,8 @@ namespace Beats
 	[RequireComponent(typeof(RectTransform))]
 	public class TrackView : MonoBehaviour
 	{
-		[SerializeField] private Track track;
+
+		public enum Trigger { Missed, Right, Wrong}
 
 		[SerializeField] RectTransform left;
 		[SerializeField] RectTransform right;
@@ -20,8 +21,12 @@ namespace Beats
 		[SerializeField] RectTransform empty;
 
 		RectTransform rTransform;
+		List<Image> beatViews;
 
 		private Vector2 _position;
+		private float beatViewSize;
+		private float spacing;
+		
 		public float position
 		{
 			get
@@ -42,6 +47,11 @@ namespace Beats
 		{
 			rTransform = (RectTransform)transform;
 			_position = rTransform.anchoredPosition;
+
+			beatViewSize = empty.rect.height;
+			spacing = GetComponent<VerticalLayoutGroup>().spacing;
+
+			beatViews = new List<Image>();
 
 			foreach(int i in track.beats)
 			{
@@ -70,19 +80,40 @@ namespace Beats
 						break;
 				}
 
-				Transform view = GameObject.Instantiate(newObj, transform).transform;
-				view.SetAsFirstSibling();
+				Image view = GameObject.Instantiate(newObj, transform).GetComponent<Image>();
+				view.transform.SetAsFirstSibling();
+
+				beatViews.Add(view);
 			}
 		}
 
 		void Start()
 		{
-			Init(track);
+			Init(GameplayController.instance.track);
 		}
 
 		void Update()
 		{
-			position -= Time.deltaTime * 200f;
+			position -= (beatViewSize + spacing) * Time.deltaTime * GameplayController.instance.beatsPerSecond;
+		}
+
+		public void TriggerBeatView(int index, Trigger trigger)
+		{
+			switch(trigger)
+			{
+				case Trigger.Missed:
+					beatViews[index].color = Color.gray;
+					//Debug.Break();
+					break;
+
+				case Trigger.Right:
+					beatViews[index].color = Color.yellow;
+					break;
+
+				case Trigger.Wrong:
+					beatViews[index].color = Color.cyan;
+					break;
+			}
 		}
 	}
 }

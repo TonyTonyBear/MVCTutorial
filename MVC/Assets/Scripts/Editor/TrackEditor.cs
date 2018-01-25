@@ -23,9 +23,6 @@ namespace Beats
 		{
 			base.OnInspectorGUI();
 
-			if (track.beats == null)
-				return;
-
 			if (track.beats.Count == 0)
 			{
 				EditorGUILayout.HelpBox("Track is empty", MessageType.Warning);

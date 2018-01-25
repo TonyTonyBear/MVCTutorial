@@ -12,7 +12,7 @@ namespace Beats
 		[Range(30, 360)]
 		public int bpm = 120;
 
-		[HideInInspector] public List<int> beats;
+		[HideInInspector] public List<int> beats = new List<int>();
 
 		static public int inputs = 4;
 
